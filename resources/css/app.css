@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+    .reveal {
+        @apply opacity-0 translate-y-12 transition-all duration-1000 ease-out;
+    }
+    .reveal.active {
+        @apply opacity-100 translate-y-0;
+    }
+    
+    .reveal-left {
+        @apply opacity-0 -translate-x-12 transition-all duration-1000 ease-out;
+    }
+    .reveal-left.active {
+        @apply opacity-100 translate-x-0;
+    }
+
+    .reveal-right {
+        @apply opacity-0 translate-x-12 transition-all duration-1000 ease-out;
+    }
+    .reveal-right.active {
+        @apply opacity-100 translate-x-0;
+    }
+}
