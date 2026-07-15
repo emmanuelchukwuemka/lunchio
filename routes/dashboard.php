@@ -10,7 +10,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
 
     Route::get('/intake', \App\Livewire\IntakeWizard::class)->name('intake');
-
+    Route::get('/website-builder', \App\Livewire\WebsiteBuilderWizard::class)->name('website-builder');
+    Route::get('/websites/{website}', [\App\Http\Controllers\Customer\WebsiteController::class, 'show'])->name('websites.show');
     Route::get('/checkout/{order}', [PaymentController::class, 'show'])->name('checkout.show');
     Route::post('/checkout/{order}', [PaymentController::class, 'process'])->name('checkout.process');
 
