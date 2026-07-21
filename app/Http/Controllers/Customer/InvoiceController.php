@@ -11,7 +11,9 @@ class InvoiceController extends Controller
 {
     public function index()
     {
-        $payments = \App\Models\Payment::where('user_id', Auth::id())
+        abort_unless(Auth::user()->canAccess('view-billing'), 403);
+
+        $payments = \App\Models\Payment::where('user_id', Auth::user()->businessOwner()->id)
             ->with(['order.package', 'invoice'])
             ->latest()
             ->get();
@@ -19,10 +21,21 @@ class InvoiceController extends Controller
         return view('customer.invoices.index', compact('payments'));
     }
 
+    public function subscriptions()
+    {
+        abort_unless(Auth::user()->canAccess('view-billing'), 403);
+
+        $subscriptions = Auth::user()->businessOwner()->subscriptions()->with('package')->latest()->get();
+
+        return view('customer.invoices.subscriptions', compact('subscriptions'));
+    }
+
     public function show(Invoice $invoice)
     {
-        // Ensure user owns this invoice
-        if ($invoice->payment->user_id !== Auth::id()) {
+        abort_unless(Auth::user()->canAccess('view-billing'), 403);
+
+        // Ensure user's business owns this invoice
+        if ($invoice->payment->user_id !== Auth::user()->businessOwner()->id) {
             abort(403);
         }
 

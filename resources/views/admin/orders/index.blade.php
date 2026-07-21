@@ -8,6 +8,17 @@
         <p class="mt-2 text-sm text-slate-500">Manage and track the progress of all active client projects.</p>
     </div>
 
+    <!-- Staff Workload -->
+    <div class="mb-10 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+        @foreach($staffMembers as $staff)
+            <div class="bg-white rounded-xl p-4 shadow-sm ring-1 ring-slate-200">
+                <p class="text-sm font-medium text-slate-900 truncate">{{ $staff->name }}</p>
+                <p class="mt-1 text-2xl font-sora font-bold text-slate-900">{{ $staff->active_order_count }}</p>
+                <p class="text-xs text-slate-400">active order{{ $staff->active_order_count === 1 ? '' : 's' }}</p>
+            </div>
+        @endforeach
+    </div>
+
     @if($orders->isEmpty())
         <div class="py-20 text-center">
             <h3 class="text-sm font-medium text-slate-900">No orders</h3>
@@ -22,6 +33,7 @@
                         <th scope="col" class="py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Client</th>
                         <th scope="col" class="py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Package</th>
                         <th scope="col" class="py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
+                        <th scope="col" class="py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Assigned To</th>
                         <th scope="col" class="relative py-3 pl-6"><span class="sr-only">Actions</span></th>
                     </tr>
                 </thead>
@@ -58,6 +70,18 @@
                                         {{ ucwords(str_replace('_', ' ', $order->status)) }}
                                     </span>
                                 </div>
+                            </td>
+                            <td class="py-4 px-6 align-top">
+                                <form action="{{ route('admin.orders.assign', $order) }}" method="POST">
+                                    @csrf
+                                    @method('PATCH')
+                                    <select name="assigned_staff_id" onchange="this.form.submit()" class="text-xs rounded-md border-slate-300 focus:border-brand-500 focus:ring-brand-500">
+                                        <option value="">Unassigned</option>
+                                        @foreach($staffMembers as $staff)
+                                            <option value="{{ $staff->id }}" @selected($order->assigned_staff_id === $staff->id)>{{ $staff->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </form>
                             </td>
                             <td class="py-4 pl-6 align-top text-right">
                                 <a href="{{ route('admin.orders.show', $order) }}" class="text-sm font-medium text-brand-600 hover:text-brand-900 transition-colors">

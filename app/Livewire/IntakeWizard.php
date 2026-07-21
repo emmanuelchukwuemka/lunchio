@@ -40,8 +40,10 @@ class IntakeWizard extends Component
 
     public function mount(): void
     {
+        abort_unless(Auth::user()->canAccess('manage-orders'), 403);
+
         $this->draft = IntakeDraft::firstOrCreate(
-            ['user_id' => Auth::id(), 'order_id' => null],
+            ['user_id' => Auth::user()->businessOwner()->id, 'order_id' => null],
             ['current_step' => 1, 'data' => $this->data, 'is_draft' => true]
         );
 
@@ -148,7 +150,7 @@ class IntakeWizard extends Component
         $this->saveDraft();
 
         $package = Package::findOrFail($this->data['package_id']);
-        $order = $orderStatusService->createOrder(Auth::user(), $package);
+        $order = $orderStatusService->createOrder(Auth::user()->businessOwner(), $package);
 
         $this->draft->update([
             'order_id' => $order->id,

@@ -4,17 +4,22 @@ namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 class CopilotController extends Controller
 {
     public function index(): View
     {
+        abort_unless(Auth::user()->canAccess('use-copilot'), 403);
+
         return view('customer.copilot.index');
     }
 
     public function chat(Request $request)
     {
+        abort_unless(Auth::user()->canAccess('use-copilot'), 403);
+
         $request->validate([
             'message' => 'required|string|max:1000',
         ]);
@@ -35,6 +40,10 @@ class CopilotController extends Controller
             $response = "### 📄 Generated Business Document\n\n**[Privacy Policy Outline]**\n1. **Information Collection:** We collect names, emails, and usage data.\n2. **Use of Information:** Used strictly for service delivery and platform improvements.\n3. **Data Protection:** Encrypted at rest and in transit.\n4. **Third Parties:** We never sell data to outside advertisers.\n\n*(You can copy this into your legal documents folder!)*";
         } elseif (str_contains($lowerMsg, 'plan') || str_contains($lowerMsg, 'business plan')) {
             $response = "### 📋 1-Page Business Plan Generator\n\n**Target Audience:** Young professionals aged 25-40.\n**Value Proposition:** High-quality, fast, and reliable service.\n**Marketing Channels:** Instagram, TikTok, and Local SEO.\n**Revenue Model:** Tiered subscriptions and one-off service fees.\n\nHow does this sound for a start?";
+        } elseif (str_contains($lowerMsg, 'website') || str_contains($lowerMsg, 'landing page')) {
+            $response = "### 🌐 Website Structure Suggestion\n\n**Recommended Pages:** Home, About, Services, Testimonials, Contact\n**Hero Headline:** \"Launch your business the smart way.\"\n**Primary CTA:** \"Get Started Today\"\n\n*Want our team to actually build this? Head to My Website and submit your requirements.*";
+        } elseif (str_contains($lowerMsg, 'social') || str_contains($lowerMsg, 'caption') || str_contains($lowerMsg, 'instagram') || str_contains($lowerMsg, 'post')) {
+            $response = "### 📱 Social Media Content Ideas\n\n1. **Behind-the-scenes** launch story post\n2. **Carousel:** \"3 things we do differently\"\n3. **Reel script:** Quick problem \u{2192} solution hook\n\n*Want a full month planned out? Try the AI Generate button on your Content Calendar.*";
         } else {
             $response = "That's a great thought! As your AI Copilot, I can help you brainstorm business names, write a 1-page business plan, generate a brand kit, draft documents, or analyze competitors. What would you like to focus on next?";
         }

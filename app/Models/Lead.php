@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Lead extends Model
 {
@@ -34,5 +35,10 @@ class Lead extends Model
     public function convertedUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'converted_user_id');
+    }
+
+    public function notes(): HasMany
+    {
+        return $this->hasMany(LeadNote::class)->latest();
     }
 }

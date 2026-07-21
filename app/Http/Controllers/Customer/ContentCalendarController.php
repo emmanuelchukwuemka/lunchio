@@ -11,10 +11,12 @@ class ContentCalendarController extends Controller
 {
     public function index()
     {
-        $user = Auth::user();
-        
+        abort_unless(Auth::user()->canAccess('manage-calendar'), 403);
+
+        $business = Auth::user()->businessOwner();
+
         // Growth tier check temporarily disabled so you can view the calendar
-        // $hasGrowth = $user->orders()->whereHas('package', function($q) {
+        // $hasGrowth = $business->orders()->whereHas('package', function($q) {
         //     $q->where('is_recurring', true);
         // })->exists();
 
@@ -22,20 +24,22 @@ class ContentCalendarController extends Controller
         //     return redirect()->route('dashboard')->with('error', 'The Content Calendar is exclusive to our Growth Tier.');
         // }
 
-        $items = $user->contentCalendarItems()->orderBy('scheduled_date', 'asc')->get();
+        $items = $business->contentCalendarItems()->orderBy('scheduled_date', 'asc')->get();
 
         return view('customer.calendar.index', compact('items'));
     }
 
     public function store(Request $request)
     {
+        abort_unless(Auth::user()->canAccess('manage-calendar'), 403);
+
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'notes' => ['nullable', 'string'],
             'scheduled_date' => ['required', 'date'],
         ]);
 
-        Auth::user()->contentCalendarItems()->create([
+        Auth::user()->businessOwner()->contentCalendarItems()->create([
             'title' => $validated['title'],
             'notes' => $validated['notes'],
             'scheduled_date' => $validated['scheduled_date'],
@@ -47,7 +51,9 @@ class ContentCalendarController extends Controller
 
     public function aiGenerate(Request $request)
     {
-        $user = Auth::user();
+        abort_unless(Auth::user()->canAccess('manage-calendar'), 403);
+
+        $user = Auth::user()->businessOwner();
 
         // AI Mock Logic: Generate 5 posts for the upcoming week
         $mockPosts = [

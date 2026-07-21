@@ -18,7 +18,7 @@ class PaymentController extends Controller
         }
 
         // If already paid, redirect to dashboard
-        if ($order->payments()->where('status', 'successful')->exists()) {
+        if ($order->payments()->where('status', Payment::STATUS_SUCCESS)->exists()) {
             return redirect()->route('dashboard')->with('status', 'Order is already paid.');
         }
 
@@ -43,8 +43,8 @@ class PaymentController extends Controller
             'user_id' => Auth::id(),
             'package_id' => $order->package_id,
             'amount' => $isRecurring ? $order->package->price_recurring : $order->package->price_one_time,
-            'currency' => 'USD',
-            'status' => 'success',
+            'currency' => $order->package->currency,
+            'status' => Payment::STATUS_SUCCESS,
             'type' => $isRecurring ? 'subscription' : 'one_time',
             'provider' => 'mock_gateway',
             'provider_reference' => 'mock_txn_' . Str::random(10),

@@ -11,9 +11,23 @@ class Website extends Model
 
     protected $guarded = [];
 
+    protected function casts(): array
+    {
+        return [
+            'sent_at' => 'datetime',
+            'approved_at' => 'datetime',
+            'admin_login' => 'encrypted',
+        ];
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
     }
 
     public function branding()

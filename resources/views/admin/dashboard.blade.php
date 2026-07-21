@@ -15,7 +15,7 @@
                 </div>
                 <div class="ml-4">
                     <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider">Total Revenue</h3>
-                    <p class="text-3xl font-sora font-bold text-slate-900">${{ number_format($totalRevenue / 100, 2) }}</p>
+                    <p class="text-3xl font-sora font-bold text-slate-900">&#8358;{{ number_format($totalRevenue, 2) }}</p>
                 </div>
             </div>
         </div>
@@ -65,10 +65,17 @@
                             <p class="font-medium text-slate-900">Order #{{ $order->id }}</p>
                             <p class="text-sm text-slate-500">{{ $order->user->name ?? 'Unknown Customer' }}</p>
                         </div>
-                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium 
-                            {{ $order->status === 'completed' ? 'bg-emerald-100 text-emerald-800' : 
-                               ($order->status === 'pending' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-800') }}">
-                            {{ ucfirst($order->status) }}
+                        @php
+                            $orderStatusColors = [
+                                'delivered' => 'bg-emerald-100 text-emerald-800',
+                                'approved' => 'bg-emerald-100 text-emerald-800',
+                                'submitted' => 'bg-amber-100 text-amber-800',
+                                'in_progress' => 'bg-blue-100 text-blue-800',
+                                'in_review' => 'bg-indigo-100 text-indigo-800',
+                            ];
+                        @endphp
+                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium {{ $orderStatusColors[$order->status] ?? 'bg-slate-100 text-slate-800' }}">
+                            {{ ucfirst(str_replace('_', ' ', $order->status)) }}
                         </span>
                     </div>
                 @empty

@@ -10,10 +10,10 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $user = Auth::user();
-        
+        $business = Auth::user()->businessOwner();
+
         // Eager load package and intake draft
-        $orders = $user->orders()->with(['package', 'intakeDraft'])->latest()->get();
+        $orders = $business->orders()->with(['package', 'intakeDraft'])->latest()->get();
 
         return view('dashboard', compact('orders'));
     }

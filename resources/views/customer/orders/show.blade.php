@@ -99,6 +99,40 @@
                             </ul>
                         @endif
                     </div>
+
+                    <!-- Messages -->
+                    <div id="messages" class="bg-white overflow-hidden shadow-sm sm:rounded-2xl border border-gray-100 p-8">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Messages</h3>
+
+                        @if($order->messages->isEmpty())
+                            <p class="text-sm text-gray-500 mb-6">No messages yet. Send a message to your Launchio team below.</p>
+                        @else
+                            <ul class="space-y-4 mb-6">
+                                @foreach($order->messages as $message)
+                                    @php $isMe = $message->user_id === Auth::id(); @endphp
+                                    <li class="flex {{ $isMe ? 'justify-end' : 'justify-start' }}">
+                                        <div class="max-w-md rounded-2xl px-4 py-3 {{ $isMe ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-800' }}">
+                                            <p class="text-sm whitespace-pre-wrap">{{ $message->body }}</p>
+                                            <p class="mt-1 text-xs {{ $isMe ? 'text-brand-100' : 'text-gray-500' }}">
+                                                {{ $isMe ? 'You' : $message->user->name }} &middot; {{ $message->created_at->format('M d, Y h:i A') }}
+                                            </p>
+                                        </div>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        @endif
+
+                        <form action="{{ route('orders.messages.store', $order) }}" method="POST">
+                            @csrf
+                            <textarea name="body" rows="2" required class="block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm" placeholder="Message your Launchio team..."></textarea>
+                            <div class="mt-3 flex justify-end">
+                                <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-semibold rounded-md text-white bg-brand-600 hover:bg-brand-700 transition-colors">
+                                    Send
+                                </button>
+                            </div>
+                            @error('body') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                        </form>
+                    </div>
                 </div>
 
                 <!-- Sidebar / Business Summary -->

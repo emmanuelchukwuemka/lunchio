@@ -71,6 +71,11 @@ class Order extends Model
         return $this->hasMany(AdminNote::class);
     }
 
+    public function messages(): HasMany
+    {
+        return $this->hasMany(OrderMessage::class)->oldest();
+    }
+
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);
@@ -79,6 +84,11 @@ class Order extends Model
     public function intakeDraft(): HasOne
     {
         return $this->hasOne(IntakeDraft::class);
+    }
+
+    public function website(): HasOne
+    {
+        return $this->hasOne(Website::class);
     }
 
     public function getBusinessNameAttribute()

@@ -30,6 +30,12 @@
                         <svg class="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
                         {{ __('AI Copilot') }}
                     </x-nav-link>
+
+                    @unless(Auth::user()->isTeamMember())
+                        <x-nav-link :href="route('team.index')" :active="request()->routeIs('team.*')">
+                            {{ __('Team') }}
+                        </x-nav-link>
+                    @endunless
                 </div>
             </div>
 

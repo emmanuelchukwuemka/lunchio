@@ -11,18 +11,22 @@ class OrderController extends Controller
 {
     public function index()
     {
-        $orders = Auth::user()->orders()->with('package')->latest()->get();
+        abort_unless(Auth::user()->canAccess('manage-orders'), 403);
+
+        $orders = Auth::user()->businessOwner()->orders()->with('package')->latest()->get();
         return view('customer.orders.index', compact('orders'));
     }
 
     public function show(Order $order)
     {
-        // Ensure user owns this order
-        if ($order->user_id !== Auth::id()) {
+        abort_unless(Auth::user()->canAccess('manage-orders'), 403);
+
+        // Ensure user's business owns this order
+        if ($order->user_id !== Auth::user()->businessOwner()->id) {
             abort(403);
         }
 
-        $order->load(['package', 'deliverables', 'intakeDraft']);
+        $order->load(['package', 'deliverables', 'intakeDraft', 'messages.user']);
         
         return view('customer.orders.show', compact('order'));
     }

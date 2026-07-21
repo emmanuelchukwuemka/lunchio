@@ -13,8 +13,21 @@ class UserController extends Controller
     {
         $users = User::with('roles')->orderBy('created_at', 'desc')->paginate(20);
         $roles = Role::all();
-        
+
         return view('admin.users.index', compact('users', 'roles'));
+    }
+
+    public function staff()
+    {
+        $staff = User::role(['admin', 'staff'])
+            ->withCount(['assignedOrders as active_order_count' => function ($query) {
+                $query->whereNotIn('status', [\App\Models\Order::STATUS_DELIVERED]);
+            }])
+            ->with('roles')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('admin.staff.index', compact('staff'));
     }
 
     public function store(Request $request)

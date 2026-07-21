@@ -54,6 +54,9 @@ class WebsiteBuilderWizard extends Component
 
     public function mount()
     {
+        abort_unless(auth()->user()->canAccess('manage-website'), 403);
+        abort_unless(auth()->user()->hasPackageFeatureLike('Website'), 403, 'Your current package does not include a website.');
+
         $this->currentStep = 1;
     }
 
@@ -84,8 +87,11 @@ class WebsiteBuilderWizard extends Component
     {
         $this->validateStep();
 
+        $business = auth()->user()->businessOwner();
+
         $website = Website::create([
-            'user_id' => auth()->id(),
+            'user_id' => $business->id,
+            'order_id' => $business->orders()->latest()->first()?->id,
             'type' => $this->type,
             'name' => $this->websiteName ?: $this->businessName,
             'tagline' => $this->tagline,

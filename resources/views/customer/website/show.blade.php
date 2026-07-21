@@ -4,10 +4,22 @@
             <h2 class="font-sora font-bold text-3xl text-slate-900 leading-tight tracking-tight">
                 {{ $website->name ?? 'My Website' }}
             </h2>
-            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-amber-100 text-amber-800 border border-amber-200">
-                <span class="w-2 h-2 rounded-full bg-current mr-2"></span>
-                Building
-            </span>
+            @if($website->approved_at)
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                    <span class="w-2 h-2 rounded-full bg-current mr-2"></span>
+                    Approved
+                </span>
+            @elseif($website->status === 'live')
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-blue-100 text-blue-800 border border-blue-200">
+                    <span class="w-2 h-2 rounded-full bg-current mr-2"></span>
+                    Live &mdash; Awaiting Your Approval
+                </span>
+            @else
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                    <span class="w-2 h-2 rounded-full bg-current mr-2"></span>
+                    Building
+                </span>
+            @endif
         </div>
     </x-slot>
 
@@ -16,19 +28,40 @@
         <!-- Status Banner -->
         <div class="bg-gradient-to-r from-indigo-900 to-brand-800 rounded-3xl p-8 text-white shadow-xl relative overflow-hidden">
             <div class="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full filter blur-3xl transform translate-x-1/2 -translate-y-1/2"></div>
-            <div class="relative z-10 flex flex-col md:flex-row items-center justify-between">
+            <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
                 <div>
-                    <h3 class="text-2xl font-sora font-bold mb-2">Your website is being built! 🚀</h3>
-                    <p class="text-brand-100 max-w-2xl text-lg">Our AI and development team are currently configuring your pages, applying your theme, and integrating your chosen features.</p>
+                    @if($website->status === 'live')
+                        <h3 class="text-2xl font-sora font-bold mb-2">Your website is live! 🎉</h3>
+                        <p class="text-brand-100 max-w-2xl text-lg">Your site is published. Need something changed? Just let us know.</p>
+                    @else
+                        <h3 class="text-2xl font-sora font-bold mb-2">Your website is being built! 🚀</h3>
+                        <p class="text-brand-100 max-w-2xl text-lg">Our team is configuring your pages, applying your theme, and integrating your chosen features.</p>
+                    @endif
                 </div>
-                <div class="mt-6 md:mt-0 flex-shrink-0">
-                    <div class="inline-flex items-center justify-center p-4 bg-white/10 rounded-2xl border border-white/20 backdrop-blur-md">
-                        <svg class="w-8 h-8 text-brand-300 animate-spin" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        <span class="ml-3 font-semibold text-lg text-white">In Progress</span>
-                    </div>
+                <div class="flex flex-col sm:flex-row gap-3 flex-shrink-0">
+                    @php $siteUrl = $website->url ?? ($website->domain?->domain_name ? 'https://'.$website->domain->domain_name : null); @endphp
+                    @if($website->status === 'live' && $siteUrl)
+                        <a href="{{ $siteUrl }}" target="_blank" class="inline-flex items-center justify-center px-5 py-3 bg-white text-brand-800 rounded-xl text-sm font-semibold hover:bg-brand-50 transition-colors shadow-sm">
+                            Visit Website &rarr;
+                        </a>
+                    @else
+                        <span class="inline-flex items-center justify-center px-5 py-3 bg-white/10 text-white/70 rounded-xl text-sm font-semibold border border-white/20">
+                            Not Live Yet
+                        </span>
+                    @endif
+                    @unless($website->approved_at)
+                        <form action="{{ route('websites.approve', $website) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="inline-flex items-center justify-center px-5 py-3 bg-emerald-500 text-white rounded-xl text-sm font-semibold hover:bg-emerald-400 transition-colors shadow-sm w-full">
+                                Approve Website
+                            </button>
+                        </form>
+                    @endunless
+                    @if($latestOrder)
+                        <a href="{{ route('orders.show', $latestOrder) }}#messages" class="inline-flex items-center justify-center px-5 py-3 bg-white/10 text-white rounded-xl text-sm font-semibold border border-white/20 hover:bg-white/20 transition-colors">
+                            Request Changes
+                        </a>
+                    @endif
                 </div>
             </div>
         </div>

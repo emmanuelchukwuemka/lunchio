@@ -14,8 +14,8 @@ class DashboardController extends Controller
     {
         // High level metrics
         $totalUsers = User::count();
-        $totalRevenue = Payment::where('status', 'succeeded')->sum('amount');
-        $pendingOrders = Order::where('status', 'pending')->count();
+        $totalRevenue = Payment::where('status', Payment::STATUS_SUCCESS)->sum('amount');
+        $pendingOrders = Order::where('status', Order::STATUS_SUBMITTED)->count();
         $recentUsers = User::latest()->take(5)->get();
         $recentOrders = Order::with('user')->latest()->take(5)->get();
 

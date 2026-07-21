@@ -3,63 +3,60 @@
 namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
+use App\Models\Campaign;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CampaignController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        abort_unless(Auth::user()->canAccess('manage-calendar'), 403);
+
+        $campaigns = Auth::user()->businessOwner()->campaigns()->latest()->get();
+
+        return view('customer.campaigns.index', compact('campaigns'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        abort_unless(Auth::user()->canAccess('manage-calendar'), 403);
+
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'channel' => ['nullable', 'string', 'max:255'],
+            'status' => ['required', 'in:planned,active,completed'],
+            'description' => ['nullable', 'string', 'max:2000'],
+            'starts_at' => ['nullable', 'date'],
+            'ends_at' => ['nullable', 'date'],
+        ]);
+
+        Auth::user()->businessOwner()->campaigns()->create($validated);
+
+        return back()->with('status', 'Campaign created.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function update(Request $request, Campaign $campaign)
     {
-        //
+        abort_unless(Auth::user()->canAccess('manage-calendar'), 403);
+        abort_unless($campaign->user_id === Auth::user()->businessOwner()->id, 403);
+
+        $validated = $request->validate([
+            'status' => ['required', 'in:planned,active,completed'],
+        ]);
+
+        $campaign->update($validated);
+
+        return back()->with('status', 'Campaign updated.');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function destroy(Campaign $campaign)
     {
-        //
-    }
+        abort_unless(Auth::user()->canAccess('manage-calendar'), 403);
+        abort_unless($campaign->user_id === Auth::user()->businessOwner()->id, 403);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+        $campaign->delete();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return back()->with('status', 'Campaign removed.');
     }
 }

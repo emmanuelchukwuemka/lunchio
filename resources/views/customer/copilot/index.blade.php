@@ -55,6 +55,12 @@
                                 <button @click="sendSuggestion('Give me a quick competitor and market analysis.')" class="px-3 py-1.5 bg-brand-50 hover:bg-brand-100 text-brand-700 rounded-lg text-xs font-medium transition-colors border border-brand-200">
                                     Analyze Competitors
                                 </button>
+                                <button @click="sendSuggestion('Suggest a website structure for my business.')" class="px-3 py-1.5 bg-brand-50 hover:bg-brand-100 text-brand-700 rounded-lg text-xs font-medium transition-colors border border-brand-200">
+                                    Website Ideas
+                                </button>
+                                <button @click="sendSuggestion('Give me some social media content ideas.')" class="px-3 py-1.5 bg-brand-50 hover:bg-brand-100 text-brand-700 rounded-lg text-xs font-medium transition-colors border border-brand-200">
+                                    Social Media Content
+                                </button>
                             </div>
                         </div>
                     </div>
