@@ -1,0 +1,54 @@
+services:
+  - type: web
+    name: lunchio
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /
+    envVars:
+      - key: APP_NAME
+        value: Launchio
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_KEY
+        sync: false # paste the output of `php artisan key:generate --show`
+      - key: APP_URL
+        sync: false # your Render URL, e.g. https://lunchio.onrender.com
+
+      - key: LOG_CHANNEL
+        value: stack
+      - key: LOG_LEVEL
+        value: error
+
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        sync: false # Neon host, e.g. ep-xxxx.us-east-2.aws.neon.tech
+      - key: DB_PORT
+        value: "5432"
+      - key: DB_DATABASE
+        sync: false # Neon database name
+      - key: DB_USERNAME
+        sync: false # Neon role/user
+      - key: DB_PASSWORD
+        sync: false # Neon password
+      - key: DB_SSLMODE
+        value: require
+
+      - key: SESSION_DRIVER
+        value: database
+      - key: CACHE_STORE
+        value: database
+      - key: QUEUE_CONNECTION
+        value: sync
+
+      - key: FILESYSTEM_DISK
+        value: local
+
+      - key: MAIL_MAILER
+        value: log
+
+      - key: OPENAI_API_KEY
+        sync: false # optional — enables the Website Builder's AI generation step
