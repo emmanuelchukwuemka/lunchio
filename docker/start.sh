@@ -1,8 +1,13 @@
 #!/usr/bin/env sh
 set -e
 
-echo "DEBUG DB_PASSWORD_LEN=${#DB_PASSWORD} DB_PASSWORD_CHARS=[$(printf '%s' "$DB_PASSWORD" | sed 's/./[&]/g')]"
-echo "DEBUG DB_PASSWORD_HEX=[$(printf '%s' "$DB_PASSWORD" | od -An -tx1 | tr -d '\n ')]"
+# Env vars pasted into Render's dashboard can pick up a trailing newline
+# (seen in practice with DB_PASSWORD) which breaks auth silently. Strip it.
+export DB_HOST=$(printf '%s' "$DB_HOST" | tr -d '\n\r')
+export DB_PORT=$(printf '%s' "$DB_PORT" | tr -d '\n\r')
+export DB_DATABASE=$(printf '%s' "$DB_DATABASE" | tr -d '\n\r')
+export DB_USERNAME=$(printf '%s' "$DB_USERNAME" | tr -d '\n\r')
+export DB_PASSWORD=$(printf '%s' "$DB_PASSWORD" | tr -d '\n\r')
 
 php artisan config:clear
 php artisan migrate --force
