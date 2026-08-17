@@ -1,7 +1,8 @@
 #!/usr/bin/env sh
 set -e
 
-echo "DEBUG DB_CONNECTION=[$DB_CONNECTION] DB_HOST=[$DB_HOST] DB_PORT=[$DB_PORT] DB_DATABASE=[$DB_DATABASE] DB_USERNAME=[$DB_USERNAME] DB_SSLMODE=[$DB_SSLMODE] DB_PASSWORD_LEN=${#DB_PASSWORD} DB_PASSWORD_FIRST=[$(printf '%s' "$DB_PASSWORD" | cut -c1)] DB_PASSWORD_LAST=[$(printf '%s' "$DB_PASSWORD" | rev | cut -c1)]"
+echo "DEBUG DB_PASSWORD_LEN=${#DB_PASSWORD} DB_PASSWORD_CHARS=[$(printf '%s' "$DB_PASSWORD" | sed 's/./[&]/g')]"
+echo "DEBUG DB_PASSWORD_HEX=[$(printf '%s' "$DB_PASSWORD" | od -An -tx1 | tr -d '\n ')]"
 
 php artisan config:clear
 php artisan migrate --force
