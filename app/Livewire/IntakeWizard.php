@@ -82,6 +82,21 @@ class IntakeWizard extends Component
         $this->saveDraft();
     }
 
+    protected function validationAttributes(): array
+    {
+        return [
+            'data.package_id' => 'package',
+            'data.business_name' => 'business name',
+            'data.business_description' => 'business description',
+            'data.industry' => 'industry',
+            'data.business_stage' => 'business stage',
+            'data.target_audience' => 'target audience',
+            'data.location' => 'location',
+            'data.existing_assets_notes' => 'asset notes',
+            'existingAsset' => 'file',
+        ];
+    }
+
     protected function rulesForStep(int $step): array
     {
         return match ($step) {

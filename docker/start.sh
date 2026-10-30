@@ -11,6 +11,7 @@ export DB_PASSWORD=$(printf '%s' "$DB_PASSWORD" | tr -d '\n\r')
 
 php artisan config:clear
 php artisan migrate --force
+php artisan db:seed --class=PackageSeeder --force
 php artisan storage:link || true
 php artisan config:cache
 php artisan view:cache
